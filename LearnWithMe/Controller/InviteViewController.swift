@@ -18,8 +18,6 @@ class InviteViewController: UIViewController {
     @IBOutlet weak var emailDisplayLabel: UILabel!
     
     
-    
-    
     var skillString = String()
     var accomplishmentString = String()
     var emailString = String()
@@ -35,6 +33,21 @@ class InviteViewController: UIViewController {
         emailDisplayLabel.text = emailString
 
     }
+    
+    
+    
+    @IBAction func takeScreenshotButtonTapped(_ sender: Any) {
+            //Create the UIImage
+            UIGraphicsBeginImageContext(view.frame.size)
+        guard let CGContext = UIGraphicsGetCurrentContext() else {return}
+        view.layer.render(in: CGContext)
+        guard let image = UIGraphicsGetImageFromCurrentImageContext() else{return}
+            UIGraphicsEndImageContext()
+            //Save it to the camera roll
+        UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
+    }
+    
+
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
