@@ -11,6 +11,8 @@ import EventKit
 import EventKitUI
 
 class CalendarViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, EventAddedDelegate {
+
+    
     
     func eventDidAdd() {
         print("hello")
@@ -30,13 +32,17 @@ class CalendarViewController: UIViewController, UITableViewDelegate, UITableView
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        if events != nil {
+            loadEvents()
+        }
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
         checkCalendarAuthorizationStatus()
     }
     
-    @IBAction func unwindToCalendar(for unwindSegue: UIStoryboardSegue, towardsViewController subsequentVC: UIViewController) {
+    @IBAction func unwindToCalendarViewController(for unwindSegue: UIStoryboardSegue, towardsViewController subsequentVC: UIViewController) {
         print("UNWIND SEGUE BACK TO CALENDAR VIEWCONTROLLER")
     }
     
@@ -49,27 +55,56 @@ class CalendarViewController: UIViewController, UITableViewDelegate, UITableView
         calendarTableView.reloadData()
     }
     
-    
-    func numberOfSectionsInTableView(calendarTableView: UITableView) -> Int {
-        return 1 // This was put in mainly for my own unit testing
-    }
-    
-    func tableView(_ calendarTableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return dataSourceArray.count // Most of the time my data source is an array of something...  will replace with the actual name of the data source
-    }
-    
-    func tableView(_ calendarTableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    func loadEvents() {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
         
-        let cell = calendarTableView.dequeueReusableCell(withIdentifier: "calendarEventCell") as! UITableViewCell
-        cell.textLabel?.text = dataSourceArray[indexPath.row]
+        let startDate = dateFormatter.date(from: "2016-01-01")
+        let endDate = dateFormatter.date(from: "2016-12-31")
+        
+        if let startDate = startDate, let endDate = endDate {
+            let eventStore = EKEventStore()
+            
+            let eventsPredicate = eventStore.predicateForEvents(withStart: startDate, end: endDate, calendars: [calendar])
+            
+            self.events = eventStore.events(matching: eventsPredicate).sorted {
+                (e1: EKEvent, e2: EKEvent) in
+                
+                return e1.startDate.compare(e2.startDate) == ComparisonResult.orderedAscending
+            }
+        }
+    }
+
+    
+    
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 1
+    }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if let events = events {
+            return events.count
+        }
+        return 0
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "calendarEventCell")!
+        cell.textLabel?.text = events?[(indexPath as NSIndexPath).row].title
+        cell.detailTextLabel?.text = formatDate(events?[(indexPath as NSIndexPath).row].startDate)
         return cell
-        
     }
     
-    
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
+    func formatDate(_ date: Date?) -> String {
+        if let date = date {
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "MM/dd/yyyy"
+            return dateFormatter.string(from: date)
+        }
+        return ""
     }
+    
+
     
     func requestAccessToCalendar() {
         eventStore.requestAccess(to: EKEntityType.event, completion: {

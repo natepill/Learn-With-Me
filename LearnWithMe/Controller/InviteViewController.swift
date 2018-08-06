@@ -12,12 +12,27 @@ class InviteViewController: UIViewController {
     
     
     @IBOutlet weak var skillDisplayLabel: UILabel!
+    
+    @IBOutlet weak var accomplishDisplayLabel: UILabel!
+    @IBOutlet weak var phoneDisplayLabel: UILabel!
+    @IBOutlet weak var emailDisplayLabel: UILabel!
+    
+    
+    
+    
     var skillString = String()
+    var accomplishmentString = String()
+    var emailString = String()
+    var phoneNumberString = String()
+    
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
         skillDisplayLabel.text = skillString
+        accomplishDisplayLabel.text = accomplishmentString
+        phoneDisplayLabel.text = phoneNumberString
+        emailDisplayLabel.text = emailString
 
     }
 

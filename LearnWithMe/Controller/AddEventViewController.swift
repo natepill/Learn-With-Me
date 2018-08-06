@@ -71,16 +71,24 @@ class AddEventViewController: UIViewController{
             do {
                 try eventStore.save(newEvent, span: .thisEvent, commit: true)
                 delegate?.eventDidAdd()
-                print("CREATED EVENT")
-                self.dismiss(animated: true, completion: nil)
+
+                // self.dismiss(animated: true, completion: nil)
+                
             } catch {
                 let alert = UIAlertController(title: "Event could not save", message: (error as NSError).localizedDescription, preferredStyle: .alert)
                 let OKAction = UIAlertAction(title: "OK", style: .default, handler: nil)
                 alert.addAction(OKAction)
-                
                 self.present(alert, animated: true, completion: nil)
 
             }
+            
+            self.events?.append(newEvent)
+            print("Event array value = \(events)")
+            
+            //print("This is the new event: \(newEvent)")
+        
+            //unwindToCalendarView
+            self.performSegue(withIdentifier: "unwindToCalendarView", sender: self)
         }
     }
     
