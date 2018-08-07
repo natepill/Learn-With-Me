@@ -13,16 +13,12 @@ import EventKitUI
 class CalendarViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, EventAddedDelegate {
 
     
-    
-    func eventDidAdd() {
-        print("hello")
-    }
-    
     let dataSourceArray = ["Item 1", "Item 2", "Item 3"]
     let eventStore = EKEventStore()
     var calendars: [EKCalendar]?
     var calendar: EKCalendar!
     var events: [EKEvent]?
+    var calendarName = ""
     
     
     @IBOutlet weak var calendarTableView: UITableView!
@@ -178,6 +174,8 @@ class CalendarViewController: UIViewController, UITableViewDelegate, UITableView
         }
         
         self.calendar = newCalendar
+        print(calendar)
+        print(newCalendar)
         self.performSegue(withIdentifier: "eventAddedSegue", sender: self)
     }
     
@@ -185,21 +183,27 @@ class CalendarViewController: UIViewController, UITableViewDelegate, UITableView
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         
-        print("Before segue identifer")
         if segue.identifier == "eventAddedSegue"{
         let destinationVC = segue.destination as! AddEventViewController
-        
-//        let addEventVC = destinationVC.childViewControllers[0] as! AddEventViewController
         destinationVC.calendar = self.calendar
         destinationVC.delegate = self
             
         }
     }
     
+    
+    
+    
+    func eventDidAdd() {
+        
+    }
+    
 
 }
-    
-    
+
+
+
+
     
 extension UIView {
     func fadeIn(_ duration: TimeInterval = 1.0, delay: TimeInterval = 0.0, completion: @escaping ((Bool) -> Void) = {(finished: Bool) -> Void in}) {

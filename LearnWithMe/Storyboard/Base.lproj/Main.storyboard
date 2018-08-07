@@ -165,6 +165,7 @@
                     </view>
                     <connections>
                         <outlet property="accomplishmentTextField" destination="qHv-eB-asR" id="0Z4-oo-TEB"/>
+                        <outlet property="calendarNameTextField" destination="HcG-d8-Lb1" id="3xf-KS-UJZ"/>
                         <outlet property="emailTextField" destination="ZVa-6T-xk9" id="JRk-P6-YOK"/>
                         <outlet property="phoneNumberTextField" destination="GGL-Ch-aD5" id="YV0-45-LVs"/>
                         <outlet property="skillTextField" destination="glA-Ar-KHJ" id="bRA-6x-dv1"/>
@@ -511,6 +512,6 @@
     </scenes>
     <inferredMetricsTieBreakers>
         <segue reference="sxm-sr-Mr2"/>
-        <segue reference="sxj-95-AJH"/>
+        <segue reference="jPA-24-jBC"/>
     </inferredMetricsTieBreakers>
 </document>
