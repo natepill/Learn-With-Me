@@ -296,7 +296,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView hidden="YES" clipsSubviews="YES" contentMode="scaleToFill" restorationIdentifier="calendarTableView" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="Rvc-sy-zCE">
-                                <rect key="frame" x="0.0" y="81" width="375" height="533"/>
+                                <rect key="frame" x="0.0" y="81" width="375" height="586"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="calendarEventCell" textLabel="7vK-4Q-CxH" style="IBUITableViewCellStyleDefault" id="hES-Vc-d6z">
@@ -323,7 +323,7 @@
                                 </connections>
                             </tableView>
                             <view hidden="YES" contentMode="scaleToFill" restorationIdentifier="needPermissionView" translatesAutoresizingMaskIntoConstraints="NO" id="cRp-Yx-cqU">
-                                <rect key="frame" x="20" y="323" width="335" height="85"/>
+                                <rect key="frame" x="20" y="323" width="335" height="138"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" fixedFrame="YES" axis="vertical" alignment="center" spacing="15" translatesAutoresizingMaskIntoConstraints="NO" id="bdy-um-j6r">
                                         <rect key="frame" x="12" y="39" width="311" height="65.5"/>
@@ -344,20 +344,14 @@
                                 </subviews>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </view>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FuV-a7-wR4">
-                                <rect key="frame" x="142" y="622" width="91" height="30"/>
-                                <state key="normal" title="Create Invite!"/>
-                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="Rvc-sy-zCE" firstAttribute="leading" secondItem="taX-P9-WUq" secondAttribute="leading" id="7qZ-XG-lGk"/>
                             <constraint firstItem="Rvc-sy-zCE" firstAttribute="top" secondItem="zte-Yi-kFt" secondAttribute="top" constant="17" id="Bpk-x0-fbI"/>
-                            <constraint firstItem="FuV-a7-wR4" firstAttribute="centerX" secondItem="taX-P9-WUq" secondAttribute="centerX" id="D4a-RM-tjx"/>
                             <constraint firstItem="Rvc-sy-zCE" firstAttribute="centerY" secondItem="cRp-Yx-cqU" secondAttribute="centerY" constant="-18" id="Fdy-QH-0C5"/>
-                            <constraint firstItem="zte-Yi-kFt" firstAttribute="bottom" secondItem="Rvc-sy-zCE" secondAttribute="bottom" constant="53" id="JaM-o3-k5t"/>
                             <constraint firstItem="Rvc-sy-zCE" firstAttribute="centerX" secondItem="cRp-Yx-cqU" secondAttribute="centerX" id="Lh4-hX-FkT"/>
-                            <constraint firstItem="zte-Yi-kFt" firstAttribute="bottom" secondItem="FuV-a7-wR4" secondAttribute="bottom" constant="15" id="iVq-2u-nfG"/>
+                            <constraint firstItem="zte-Yi-kFt" firstAttribute="bottom" secondItem="Rvc-sy-zCE" secondAttribute="bottom" id="ZBk-gC-0T1"/>
                             <constraint firstItem="cRp-Yx-cqU" firstAttribute="leading" secondItem="zte-Yi-kFt" secondAttribute="leading" constant="20" id="m3x-FW-uQW"/>
                             <constraint firstAttribute="trailing" secondItem="Rvc-sy-zCE" secondAttribute="trailing" id="yTB-M4-6Uo"/>
                             <constraint firstItem="cRp-Yx-cqU" firstAttribute="top" secondItem="zte-Yi-kFt" secondAttribute="top" constant="259" id="zAN-i5-cme"/>

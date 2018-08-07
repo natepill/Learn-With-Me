@@ -33,6 +33,11 @@ class AddEventViewController: UIViewController{
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        
+        
+        
+        
+        
         // check safely with guard that your save button is the sender and you can use it
         // if not print message
         guard let uiBarButtonItem = sender as? UIBarButtonItem else {
@@ -50,9 +55,12 @@ class AddEventViewController: UIViewController{
     
 
     
-
+    
     
     @IBAction func AddEventButtonTapped(_ sender: Any) {
+        
+        print("AddEventButtonTapped")
+        
         
         if (benchMarkNameTextField.text?.isEmpty)!{
             let alert = UIAlertController(title: "No Benchmark Name", message: "Must enter a benchmark name in order to continue", preferredStyle: .alert)
@@ -70,52 +78,48 @@ class AddEventViewController: UIViewController{
                 }}))
             
             self.present(alert, animated: true, completion: nil)
-
         }
-//        else{performSegue(withIdentifier: "toCalendar", sender: self)}
-        
-        
-        
-        
-        
-        print("AddEventButtonTapped")
-        
-        // Create an Event Store instance
-        let eventStore = EKEventStore()
-
-        // Use Event Store to create a new calendar instance
-        if let calendarForEvent = eventStore.calendar(withIdentifier: self.calendar.calendarIdentifier)
-        {
-            let newEvent = EKEvent(eventStore: eventStore)
             
-            newEvent.calendar = calendarForEvent
-            newEvent.title = self.benchMarkNameTextField.text ?? "BenchMark"
-            newEvent.startDate = self.eventStartDatePicker.date
-            newEvent.endDate = self.eventEndDatePicker.date
+        else{
             
-            // Save the calendar using the Event Store instance
             
-            do {
-                try eventStore.save(newEvent, span: .thisEvent, commit: true)
-                delegate?.eventDidAdd()
-
-                // self.dismiss(animated: true, completion: nil)
+            // Create an Event Store instance
+            let eventStore = EKEventStore()
+            
+            // Use Event Store to create a new calendar instance
+            if let calendarForEvent = eventStore.calendar(withIdentifier: self.calendar.calendarIdentifier)
+            {
+                let newEvent = EKEvent(eventStore: eventStore)
                 
-            } catch {
-                let alert = UIAlertController(title: "Event could not save", message: (error as NSError).localizedDescription, preferredStyle: .alert)
-                let OKAction = UIAlertAction(title: "OK", style: .default, handler: nil)
-                alert.addAction(OKAction)
-                self.present(alert, animated: true, completion: nil)
-
+                newEvent.calendar = calendarForEvent
+                newEvent.title = self.benchMarkNameTextField.text ?? "BenchMark"
+                newEvent.startDate = self.eventStartDatePicker.date
+                newEvent.endDate = self.eventEndDatePicker.date
+                
+                // Save the calendar using the Event Store instance
+                
+                do {
+                    try eventStore.save(newEvent, span: .thisEvent, commit: true)
+                    delegate?.eventDidAdd()
+                    
+                    // self.dismiss(animated: true, completion: nil)
+                    
+                } catch {
+                    let alert = UIAlertController(title: "Event could not save", message: (error as NSError).localizedDescription, preferredStyle: .alert)
+                    let OKAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+                    alert.addAction(OKAction)
+                    self.present(alert, animated: true, completion: nil)
+                    
+                }
+                
+                self.events?.append(newEvent)
+                print("Event array value = \(events)")
+                
+                //print("This is the new event: \(newEvent)")
+                
+                //unwindToCalendarView
+                self.performSegue(withIdentifier: "unwindToCalendarView", sender: self)
             }
-            
-            self.events?.append(newEvent)
-            print("Event array value = \(events)")
-            
-            //print("This is the new event: \(newEvent)")
-        
-            //unwindToCalendarView
-            self.performSegue(withIdentifier: "unwindToCalendarView", sender: self)
         }
     }
     
