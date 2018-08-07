@@ -74,7 +74,9 @@ class FormViewController: UIViewController{
             InviteVC.emailString = self.emailText
         }
             if segue.identifier == "toCalendar"{
-                var CalendarVC = segue.destination as! CalendarViewController
+                let CalVC = segue.destination as! UINavigationController
+                let CalendarVC = CalVC.topViewController as! CalendarViewController
+                
                 guard let calendarNameText = calendarNameTextField.text else{return}
                 CalendarVC.calendarName = calendarNameText
             }

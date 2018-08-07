@@ -27,7 +27,7 @@ class AddEventViewController: UIViewController{
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
-        print(calendar)
+        print("Calendar that passed into AddEventVC: \(calendar)")
         self.eventStartDatePicker.setDate(initialDatePickerValue(), animated: false)
         self.eventEndDatePicker.setDate(initialDatePickerValue(), animated: false)
     }
@@ -42,8 +42,10 @@ class AddEventViewController: UIViewController{
         
         // check if you selected the save button
         if cancelButtonTapped == uiBarButtonItem {
-            print("save button selected")
+            print("cancel button selected")
         }
+        
+        
     }
     
 
@@ -52,7 +54,32 @@ class AddEventViewController: UIViewController{
     
     @IBAction func AddEventButtonTapped(_ sender: Any) {
         
+        if (benchMarkNameTextField.text?.isEmpty)!{
+            let alert = UIAlertController(title: "No Benchmark Name", message: "Must enter a benchmark name in order to continue", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { action in
+                switch action.style{
+                case .default:
+                    print("default")
+                    
+                case .cancel:
+                    print("cancel")
+                    
+                case .destructive:
+                    print("destructive")
+                    
+                }}))
+            
+            self.present(alert, animated: true, completion: nil)
+
+        }
+//        else{performSegue(withIdentifier: "toCalendar", sender: self)}
+        
+        
+        
+        
+        
         print("AddEventButtonTapped")
+        
         // Create an Event Store instance
         let eventStore = EKEventStore()
 

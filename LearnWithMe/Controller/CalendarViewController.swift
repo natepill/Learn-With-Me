@@ -29,6 +29,7 @@ class CalendarViewController: UIViewController, UITableViewDelegate, UITableView
         super.viewDidLoad()
         
         if events != nil {
+            print("This is an array of calendar events: \(events)")
             loadEvents()
         }
         
@@ -36,6 +37,7 @@ class CalendarViewController: UIViewController, UITableViewDelegate, UITableView
     
     override func viewWillAppear(_ animated: Bool) {
         checkCalendarAuthorizationStatus()
+        print("The calendar name that was passed through the previous VC was: \(calendarName)!")
     }
     
     @IBAction func unwindToCalendarViewController(for unwindSegue: UIStoryboardSegue, towardsViewController subsequentVC: UIViewController) {
@@ -149,7 +151,7 @@ class CalendarViewController: UIViewController, UITableViewDelegate, UITableView
         
         // Probably want to prevent someone from saving a calendar
         // if they don't type in a name...
-        newCalendar.title = "Some Calendar Name"
+        newCalendar.title = calendarName
         
         // Access list of available sources from the Event Store
         let sourcesInEventStore = eventStore.sources
