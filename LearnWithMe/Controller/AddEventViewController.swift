@@ -31,6 +31,33 @@ class AddEventViewController: UIViewController{
         print("Calendar that passed into AddEventVC: \(calendar)")
         self.eventStartDatePicker.setDate(initialDatePickerValue(), animated: false)
         self.eventEndDatePicker.setDate(initialDatePickerValue(), animated: false)
+        
+        
+    }
+    
+    
+    func createCalendarEventWithCoreData(){
+        
+        // Create an Event Store instance
+        let eventStore = EKEventStore()
+        
+        // Use Event Store to create a new calendar instance
+        guard let calendarForEvent = eventStore.calendar(withIdentifier: self.calendar.calendarIdentifier) else {
+            return assertionFailure("Failed to get calendar with id ")
+        }
+        
+        // create context
+        let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+        let event = Event(context: context)
+        
+        event.title = self.benchMarkNameTextField.text ?? "Default BenchMark"
+        event.calendar = calendarForEvent
+        event.startDate = self.eventStartDatePicker.date
+        event.endDate = self.eventEndDatePicker.date
+
+        (UIApplication.shared.delegate as! AppDelegate).saveContext()
+        
+        navigationController?.popViewController(animated: true)
     }
     
 
@@ -57,7 +84,6 @@ class AddEventViewController: UIViewController{
             try eventStore.save(newEvent, span: .thisEvent, commit: true)
             delegate?.eventDidAdd()
             
-            UserDefaults.standard.set(events, forKey: "eventArray")
             // self.dismiss(animated: true, completion: nil)
             
         } catch {
@@ -67,6 +93,11 @@ class AddEventViewController: UIViewController{
             self.present(alert, animated: true, completion: nil)
             
         }
+        
+
+        //set event array to User defaults
+
+
         
  
         self.events.append(newEvent)
