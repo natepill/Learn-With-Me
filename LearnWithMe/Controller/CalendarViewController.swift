@@ -13,11 +13,15 @@ import EventKitUI
 class CalendarViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, EventAddedDelegate {
 
     
-    let dataSourceArray = ["Item 1", "Item 2", "Item 3"]
     let eventStore = EKEventStore()
     var calendars: [EKCalendar]?
-    var calendar: EKCalendar!
-    var events: [EKEvent]?
+    var calendar: EKCalendar?
+    
+    var events = [EKEvent]() {
+        didSet {
+            calendarTableView.reloadData()
+        }
+    }
     var calendarName = ""
     
     
@@ -28,15 +32,28 @@ class CalendarViewController: UIViewController, UITableViewDelegate, UITableView
     override func viewDidLoad() {
         super.viewDidLoad()
         
+//        if events != nil {
+//            print("This is an array of calendar events: \(events)")
+//            loadEvents()
+//        }
+//
+//        print("Events Count: \(events.count)")
+        
+        
+    }
+    
+    
+    
+    override func viewWillAppear(_ animated: Bool) {
+        checkCalendarAuthorizationStatus()
+        
         if events != nil {
             print("This is an array of calendar events: \(events)")
             loadEvents()
         }
         
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        checkCalendarAuthorizationStatus()
+        print("Events Count: \(events.count)")
+        
         print("The calendar name that was passed through the previous VC was: \(calendarName)!")
     }
     
@@ -60,17 +77,22 @@ class CalendarViewController: UIViewController, UITableViewDelegate, UITableView
         let startDate = dateFormatter.date(from: "2016-01-01")
         let endDate = dateFormatter.date(from: "2016-12-31")
         
-        if let startDate = startDate, let endDate = endDate {
-            let eventStore = EKEventStore()
-            
-            let eventsPredicate = eventStore.predicateForEvents(withStart: startDate, end: endDate, calendars: [calendar])
-            
-            self.events = eventStore.events(matching: eventsPredicate).sorted {
-                (e1: EKEvent, e2: EKEvent) in
-                
-                return e1.startDate.compare(e2.startDate) == ComparisonResult.orderedAscending
-            }
-        }
+//        if let startDate = startDate, let endDate = endDate {
+//            let eventStore = EKEventStore()
+//
+//            guard let calendar = self.calendar else { return
+//                assertionFailure("Failed to receive calender")
+//            }
+//
+//            let eventsPredicate = eventStore.predicateForEvents(withStart: startDate, end: endDate, calendars: calendars)
+//
+//
+//            self.events = eventStore.events(matching: eventsPredicate).sorted {
+//                (e1: EKEvent, e2: EKEvent) in
+//
+//                return e1.startDate.compare(e2.startDate) == ComparisonResult.orderedAscending
+//            }
+//        }
     }
 
     
@@ -80,16 +102,17 @@ class CalendarViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if let events = events {
-            return events.count
-        }
-        return 0
+        return events.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "calendarEventCell")!
-        cell.textLabel?.text = events?[(indexPath as NSIndexPath).row].title
-        cell.detailTextLabel?.text = formatDate(events?[(indexPath as NSIndexPath).row].startDate)
+        let cell = tableView.dequeueReusableCell(withIdentifier: "calendarEventCell", for: indexPath)
+        let event = events[indexPath.row]
+        
+        cell.textLabel?.text = event.title
+        cell.detailTextLabel?.text = formatDate(event.startDate)
+//        cell.textLabel?.text = events[(indexPath as NSIndexPath).row].title
+//        cell.detailTextLabel?.text = formatDate(events[(indexPath as NSIndexPath).row].startDate)
         return cell
     }
     
@@ -142,42 +165,7 @@ class CalendarViewController: UIViewController, UITableViewDelegate, UITableView
     
     
     @IBAction func addCalendarButtonTapped(_ sender: Any) {
-        
-        // Create an Event Store instance
-        let eventStore = EKEventStore();
-        
-        // Use Event Store to create a new calendar instance
-        let newCalendar = EKCalendar(for: .event, eventStore: eventStore)
-        
-        // Probably want to prevent someone from saving a calendar
-        // if they don't type in a name...
-        newCalendar.title = calendarName
-        
-        // Access list of available sources from the Event Store
-        let sourcesInEventStore = eventStore.sources
-        
-        // Filter the available sources and select the "Local" source to assign to the new calendar's
-        // source property
-        newCalendar.source = sourcesInEventStore.filter{
-            (source: EKSource) -> Bool in
-            source.sourceType.rawValue == EKSourceType.local.rawValue
-            }.first!
-        
-        // Save the calendar using the Event Store instance
-        do {
-            try eventStore.saveCalendar(newCalendar, commit: true)
-            UserDefaults.standard.set(newCalendar.calendarIdentifier, forKey: "EventTrackerPrimaryCalendar")
-        } catch {
-            let alert = UIAlertController(title: "Calendar could not save", message: (error as NSError).localizedDescription, preferredStyle: .alert)
-            let OKAction = UIAlertAction(title: "OK", style: .default, handler: nil)
-            alert.addAction(OKAction)
-            
-            self.present(alert, animated: true, completion: nil)
-        }
-        
-        self.calendar = newCalendar
-        print(calendar)
-        print(newCalendar)
+
         self.performSegue(withIdentifier: "eventAddedSegue", sender: self)
     }
     
@@ -199,8 +187,6 @@ class CalendarViewController: UIViewController, UITableViewDelegate, UITableView
     func eventDidAdd() {
         
     }
-    
-
 }
 
 

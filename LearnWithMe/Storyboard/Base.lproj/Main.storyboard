@@ -464,11 +464,7 @@
                         <viewLayoutGuide key="safeArea" id="tqG-Ww-5zZ"/>
                     </view>
                     <navigationItem key="navigationItem" id="n9T-bn-nvx">
-                        <barButtonItem key="leftBarButtonItem" systemItem="cancel" id="OCL-pm-uT1">
-                            <connections>
-                                <segue destination="0ot-4x-YGY" kind="unwind" identifier="unwindToCalendarView" unwindAction="unwindToCalendarViewControllerFor:towardsViewController:" id="4xp-wc-jk7"/>
-                            </connections>
-                        </barButtonItem>
+                        <barButtonItem key="leftBarButtonItem" systemItem="cancel" id="OCL-pm-uT1"/>
                         <barButtonItem key="rightBarButtonItem" title="Add Event" id="cEG-1X-KJp">
                             <connections>
                                 <action selector="AddEventButtonTapped:" destination="oFB-BZ-pGl" id="FMx-J4-7GV"/>
@@ -480,6 +476,7 @@
                         <outlet property="cancelButtonTapped" destination="OCL-pm-uT1" id="2Cc-84-FDP"/>
                         <outlet property="eventEndDatePicker" destination="Pu1-3o-YH4" id="GfS-l9-Tqz"/>
                         <outlet property="eventStartDatePicker" destination="j4V-AI-g9f" id="uHz-9o-Geh"/>
+                        <segue destination="0ot-4x-YGY" kind="unwind" identifier="unwindToCalendarView" unwindAction="unwindToCalendarViewControllerFor:towardsViewController:" id="bLg-ca-w4n"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="9Bo-bT-Pgl" userLabel="First Responder" sceneMemberID="firstResponder"/>

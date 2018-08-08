@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import EventKit
 
 class FormViewController: UIViewController{
 
@@ -14,6 +15,8 @@ class FormViewController: UIViewController{
     var accomplishmentText = ""
     var emailText = ""
     var phoneNumberText = ""
+    var calendarName = ""
+    var calendar: EKCalendar?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -32,14 +35,6 @@ class FormViewController: UIViewController{
     @IBAction func unwindToForm(for unwindSegue: UIStoryboardSegue, towardsViewController subsequentVC: UIViewController) {
         print("UNWIND SEGUE BACK TO FormViewController")
     }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-    
-
-    
     
     @IBAction func toInviteViewController(_ sender: Any) {
         self.skillText = skillTextField.text!
@@ -62,59 +57,102 @@ class FormViewController: UIViewController{
     }
 
     
+    func createNewCalendar() -> EKCalendar {
+        
+        // Create an Event Store instance
+        let eventStore = EKEventStore();
+        
+        // Use Event Store to create a new calendar instance
+        let newCalendar = EKCalendar(for: .event, eventStore: eventStore)
+        
+        // Probably want to prevent someone from saving a calendar
+        // if they don't type in a name...
+        newCalendar.title = calendarName
+        
+        // Access list of available sources from the Event Store
+        let sourcesInEventStore = eventStore.sources
+        print("Sources In Event Store: \(sourcesInEventStore)")
+        
+        // Filter the available sources and select the "Local" source to assign to the new calendar's
+        // source property
+        newCalendar.source = sourcesInEventStore.filter{
+            (source: EKSource) -> Bool in
+            source.sourceType.rawValue == EKSourceType.local.rawValue
+            }.first!
+        
+        // Save the calendar using the Event Store instance
+        do {
+            try eventStore.saveCalendar(newCalendar, commit: true)
+            UserDefaults.standard.set(newCalendar.calendarIdentifier, forKey: "EventTrackerPrimaryCalendar")
+        } catch {
+            let alert = UIAlertController(title: "Calendar could not save", message: (error as NSError).localizedDescription, preferredStyle: .alert)
+            let OKAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+            alert.addAction(OKAction)
+            
+            self.present(alert, animated: true, completion: nil)
+        }
+        
+        return newCalendar
 
-        override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+    }
+
+    
+    @IBAction func toCalendarViewController(_ sender: Any) {
+        
+        
+       
+        
+        
+        if (calendarNameTextField.text?.isEmpty)!{
+            let alert = UIAlertController(title: "No Calendar Name", message: "Must enter a calendar name in order to continue", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { action in
+                switch action.style{
+                case .default:
+                    print("default")
+                    
+                case .cancel:
+                    print("cancel")
+                    
+                case .destructive:
+                    print("destructive")
+                    
+                }}))
+            
+            self.present(alert, animated: true, completion: nil)
+            print("You must enter a name for calendar")
+        } else {
+            
+        
+            performSegue(withIdentifier: "toCalendar", sender: self)
+            
+        }
+        
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         
         if segue.identifier == "segue"{
             var InviteVC = segue.destination as! InviteViewController
-
+            
             InviteVC.skillString = "Lets learn \(self.skillText) together"
             InviteVC.accomplishmentString = self.accomplishmentText
             InviteVC.phoneNumberString = self.phoneNumberText
             InviteVC.emailString = self.emailText
         }
-            if segue.identifier == "toCalendar"{
-                let CalVC = segue.destination as! UINavigationController
-                let CalendarVC = CalVC.topViewController as! CalendarViewController
-                
-                guard let calendarNameText = calendarNameTextField.text else{return}
-                CalendarVC.calendarName = calendarNameText
-            }
+        if segue.identifier == "toCalendar"{
+            let CalVC = segue.destination as! UINavigationController
+            let CalendarVC = CalVC.topViewController as! CalendarViewController
+            
+            guard let calendarNameText = calendarNameTextField.text else{return}
+            
+            
+            calendar = createNewCalendar()
+            print("Help me Uchenna: \(calendar)")
+            
+            CalendarVC.calendar = self.calendar
+            CalendarVC.calendarName = calendarNameText
+            
+        }
     }
-    
-    @IBAction func toCalendarViewController(_ sender: Any) {
-        
-            if (calendarNameTextField.text?.isEmpty)!{
-                let alert = UIAlertController(title: "No Calendar Name", message: "Must enter a calendar name in order to continue", preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { action in
-                    switch action.style{
-                    case .default:
-                        print("default")
-                        
-                    case .cancel:
-                        print("cancel")
-                        
-                    case .destructive:
-                        print("destructive")
-
-                    }}))
-
-                self.present(alert, animated: true, completion: nil)
-                print("You must enter a name for calendar")
-            }
-            else{performSegue(withIdentifier: "toCalendar", sender: self)}
-        
-
-    }
-    
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-    }
-    */
 
 }

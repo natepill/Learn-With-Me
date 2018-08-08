@@ -16,8 +16,9 @@ class AddEventViewController: UIViewController{
     
     var eventStore = EKEventStore()
     var calendar: EKCalendar! // Passed in from previous view controller
-    var events: [EKEvent]?
+    var events = [EKEvent]()
     var delegate: EventAddedDelegate?
+   
     
     @IBOutlet weak var benchMarkNameTextField: UITextField!
     @IBOutlet weak var eventStartDatePicker: UIDatePicker!
@@ -32,28 +33,45 @@ class AddEventViewController: UIViewController{
         self.eventEndDatePicker.setDate(initialDatePickerValue(), animated: false)
     }
     
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        
-        
-        
-        
-        
-        // check safely with guard that your save button is the sender and you can use it
-        // if not print message
-        guard let uiBarButtonItem = sender as? UIBarButtonItem else {
-            print("There is no UIBarButtonItem sender")
-            return
-        }
-        
-        // check if you selected the save button
-        if cancelButtonTapped == uiBarButtonItem {
-            print("cancel button selected")
-        }
-        
-        
-    }
-    
 
+    
+    func createCalendarEvent() {
+        // Create an Event Store instance
+        let eventStore = EKEventStore()
+        
+        // Use Event Store to create a new calendar instance
+        guard let calendarForEvent = eventStore.calendar(withIdentifier: self.calendar.calendarIdentifier) else {
+            return assertionFailure("Failed to get calendar with id ")
+        }
+        
+        let newEvent = EKEvent(eventStore: eventStore)
+        
+        newEvent.calendar = calendarForEvent
+        newEvent.title = self.benchMarkNameTextField.text ?? "Default BenchMark"
+        newEvent.startDate = self.eventStartDatePicker.date
+        newEvent.endDate = self.eventEndDatePicker.date
+        
+        // Save the calendar using the Event Store instance
+        
+        do {
+            try eventStore.save(newEvent, span: .thisEvent, commit: true)
+            delegate?.eventDidAdd()
+            
+            UserDefaults.standard.set(events, forKey: "eventArray")
+            // self.dismiss(animated: true, completion: nil)
+            
+        } catch {
+            let alert = UIAlertController(title: "Event could not save", message: (error as NSError).localizedDescription, preferredStyle: .alert)
+            let OKAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+            alert.addAction(OKAction)
+            self.present(alert, animated: true, completion: nil)
+            
+        }
+        
+ 
+        self.events.append(newEvent)
+
+    }
     
     
     
@@ -78,51 +96,24 @@ class AddEventViewController: UIViewController{
                 }}))
             
             self.present(alert, animated: true, completion: nil)
-        }
+        } else {
             
-        else{
-            
-            
-            // Create an Event Store instance
-            let eventStore = EKEventStore()
-            
-            // Use Event Store to create a new calendar instance
-            if let calendarForEvent = eventStore.calendar(withIdentifier: self.calendar.calendarIdentifier)
-            {
-                let newEvent = EKEvent(eventStore: eventStore)
-                
-                newEvent.calendar = calendarForEvent
-                newEvent.title = self.benchMarkNameTextField.text ?? "BenchMark"
-                newEvent.startDate = self.eventStartDatePicker.date
-                newEvent.endDate = self.eventEndDatePicker.date
-                
-                // Save the calendar using the Event Store instance
-                
-                do {
-                    try eventStore.save(newEvent, span: .thisEvent, commit: true)
-                    delegate?.eventDidAdd()
-                    
-                    // self.dismiss(animated: true, completion: nil)
-                    
-                } catch {
-                    let alert = UIAlertController(title: "Event could not save", message: (error as NSError).localizedDescription, preferredStyle: .alert)
-                    let OKAction = UIAlertAction(title: "OK", style: .default, handler: nil)
-                    alert.addAction(OKAction)
-                    self.present(alert, animated: true, completion: nil)
-                    
-                }
-                
-                self.events?.append(newEvent)
-                print("Event array value = \(events)")
-                
-                //print("This is the new event: \(newEvent)")
-                
-                //unwindToCalendarView
-                self.performSegue(withIdentifier: "unwindToCalendarView", sender: self)
-            }
+            createCalendarEvent()
+
+            self.performSegue(withIdentifier: "unwindToCalendarView", sender: self)
         }
     }
     
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        
+        
+        if segue.identifier == "unwindToCalendarView" {
+            let destinationVC = segue.destination as! CalendarViewController
+            destinationVC.events = self.events
+            
+            
+        }
+    }
     
     
     
