@@ -14,10 +14,14 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
     }
+    @IBOutlet var ViewControllerView: UIView!
+    
+    override func viewWillAppear(_ animated: Bool) {
+    }
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+    @IBAction func viewSchedule(_ sender: Any) {
+        UIApplication.shared.openURL(NSURL(string: "calshow://")! as URL)
+
     }
     
     @IBAction func unwindToViewController(for unwindSegue: UIStoryboard, towardsViewController subsequentVC: UIViewController){        print("UNWIND SEGUE BACK TO VIEWCONTROLLER")}

@@ -16,20 +16,27 @@ class FormViewController: UIViewController{
     var emailText = ""
     var phoneNumberText = ""
     var calendarName = ""
+    var calendars: [EKCalendar]?
     var calendar: EKCalendar?
+    let eventStore = EKEventStore()
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         // Do any additional setup after loading the view.
+    }
+    
+   override func viewWillAppear(_ animated: Bool) {
+        checkCalendarAuthorizationStatus()
     }
     
     @IBOutlet weak var skillTextField: UITextField!
     @IBOutlet weak var accomplishmentTextField: UITextField!
     @IBOutlet weak var emailTextField: UITextField!
     @IBOutlet weak var phoneNumberTextField: UITextField!
-    
     @IBOutlet weak var calendarNameTextField: UITextField!
+    
+    @IBOutlet weak var needPermissionView: UIView!
     
     
     @IBAction func unwindToForm(for unwindSegue: UIStoryboardSegue, towardsViewController subsequentVC: UIViewController) {
@@ -59,19 +66,20 @@ class FormViewController: UIViewController{
     
     func createNewCalendar() -> EKCalendar {
         
+    
         // Create an Event Store instance
-        let eventStore = EKEventStore();
+        let eventStore = EKEventStore()
         
         // Use Event Store to create a new calendar instance
+        // Configure its title
         let newCalendar = EKCalendar(for: .event, eventStore: eventStore)
-        
+    
         // Probably want to prevent someone from saving a calendar
         // if they don't type in a name...
-        newCalendar.title = calendarName
+        newCalendar.title = "Calendar Name"
         
         // Access list of available sources from the Event Store
         let sourcesInEventStore = eventStore.sources
-        print("Sources In Event Store: \(sourcesInEventStore)")
         
         // Filter the available sources and select the "Local" source to assign to the new calendar's
         // source property
@@ -92,15 +100,53 @@ class FormViewController: UIViewController{
             self.present(alert, animated: true, completion: nil)
         }
         
+        
+
+        
         return newCalendar
 
+    }
+    
+    
+    func requestAccessToCalendar() {
+        
+        eventStore.requestAccess(to: EKEntityType.event, completion: {
+            (accessGranted: Bool, error: Error?) in
+            
+            if accessGranted == true {
+                DispatchQueue.main.async(execute: {
+                    
+                    //TO DO: WHAT TO OUT IN HERE? SEGUE TO VIEW CONTROLLER?
+                    
+                })
+            } else {
+                DispatchQueue.main.async(execute: {
+                    self.needPermissionView.fadeIn()
+                })
+            }
+        })
+    }
+    
+    
+    func checkCalendarAuthorizationStatus() {
+        let status = EKEventStore.authorizationStatus(for: EKEntityType.event)
+        
+        switch (status) {
+        case EKAuthorizationStatus.notDetermined:
+            print("not Determined")
+            requestAccessToCalendar()
+        case EKAuthorizationStatus.authorized:
+            print("authorized")
+
+        case EKAuthorizationStatus.restricted, EKAuthorizationStatus.denied:
+            needPermissionView.fadeIn()
+            print("restricted")
+        }
     }
 
     
     @IBAction func toCalendarViewController(_ sender: Any) {
         
-        
-       
         
         
         if (calendarNameTextField.text?.isEmpty)!{
@@ -115,18 +161,18 @@ class FormViewController: UIViewController{
                     
                 case .destructive:
                     print("destructive")
-                    
+            
                 }}))
             
             self.present(alert, animated: true, completion: nil)
             print("You must enter a name for calendar")
         } else {
             
-        
             performSegue(withIdentifier: "toCalendar", sender: self)
             
+            
+         
         }
-        
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -145,7 +191,6 @@ class FormViewController: UIViewController{
             
             guard let calendarNameText = calendarNameTextField.text else{return}
             
-            
             calendar = createNewCalendar()
             print("Help me Uchenna: \(calendar)")
             
@@ -155,4 +200,27 @@ class FormViewController: UIViewController{
         }
     }
 
+
 }
+
+
+
+extension UIView {
+    func fadeIn(_ duration: TimeInterval = 1.0, delay: TimeInterval = 0.0, completion: @escaping ((Bool) -> Void) = {(finished: Bool) -> Void in}) {
+        UIView.animate(withDuration: duration, delay: delay, options: UIViewAnimationOptions.curveEaseIn, animations: {
+            self.alpha = 1.0
+        }, completion: completion)  }
+    
+    func fadeOut(_ duration: TimeInterval = 1.0, delay: TimeInterval = 0.0, completion: @escaping (Bool) -> Void = {(finished: Bool) -> Void in}) {
+        UIView.animate(withDuration: duration, delay: delay, options: UIViewAnimationOptions.curveEaseIn, animations: {
+            self.alpha = 0.0
+        }, completion: completion)
+    }
+}
+
+
+
+
+
+
+
